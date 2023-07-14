@@ -6,6 +6,7 @@ enable_language(C)
 enable_language(CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall")
 
 add_definitions(-DENGINE_BUILD_DLL)
 
