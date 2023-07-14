@@ -42,3 +42,9 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} glad)
 target_link_libraries(${PROJECT_NAME} imgui)
 target_link_libraries(${PROJECT_NAME} SDL3 SDL3_image)
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${PROJECT_BINARY_DIR}/external/sdl/SDL3.dll ${PROJECT_BINARY_DIR}
+        ${PROJECT_BINARY_DIR}/external/sdl_image/SDL3_image.dll ${PROJECT_BINARY_DIR}
+)
