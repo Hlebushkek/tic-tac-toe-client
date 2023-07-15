@@ -14,8 +14,8 @@ add_subdirectory(external/glad/)
 add_subdirectory(external/sdl/)
 add_subdirectory(external/sdl_image/)
 
+include_directories(include)
 include_directories(
-    /include
     external/glad/include
     external/imgui
 )
