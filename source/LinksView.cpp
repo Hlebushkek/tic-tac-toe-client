@@ -9,7 +9,7 @@ void LinksView::ImGuiRender()
         ImGui::Dummy(ImVec2(0.0f, 1.0f));
         ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Social");
         ImGui::Text("GitHub:");
-        ImGui::Text("Our Team: ");
+        
         GUIView::ImGuiRender();
     }
     ImGui::EndChild();
