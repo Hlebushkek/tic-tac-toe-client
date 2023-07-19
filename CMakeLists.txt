@@ -55,3 +55,8 @@ if(Boost_FOUND)
     target_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES})
     target_link_libraries(${PROJECT_NAME} wsock32 ws2_32)
 endif()
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/external/sdl/SDL3.dll ${CMAKE_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/external/sdl_image/SDL3_image.dll ${CMAKE_BINARY_DIR}
+)
