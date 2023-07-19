@@ -8,6 +8,9 @@
 #include <backends/imgui_impl_opengl3.h>
 
 #include "GUIWindow.hpp"
+#include "TicTacToeClient.hpp"
+
+class TicTacToeClient;
 
 class TicTacToeApp
 {
@@ -20,17 +23,23 @@ public:
 
     GUIWindow *getMainWindow() const { return mainWindow; }
 
+    TicTacToeClient &getClient() { return client; }
+
 private:
     void UpdateInput();
+    void UpdateNet();
 
 private:
     void InitWindow(const char *title, int windowWidth, int windowHeight, uint32_t windowFlags);
     void InitGLAD();
     void InitGL();
     void InitIMGUI();
+    void InitClient();
 
 private:
     static TicTacToeApp *application;
+
+    TicTacToeClient client;
 
     bool appShouldTerminate = false;
 

@@ -8,6 +8,7 @@ TicTacToeApp::TicTacToeApp()
     InitGLAD();
     InitGL();
     InitIMGUI();
+    InitClient();
 }
 
 TicTacToeApp::~TicTacToeApp()
@@ -31,6 +32,8 @@ void TicTacToeApp::Update()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     UpdateInput();
+
+    UpdateNet();
 
     mainWindow->Render();
 
@@ -57,6 +60,36 @@ void TicTacToeApp::UpdateInput()
         if (tempEvent.type == SDL_EVENT_QUIT)
         {
             this->appShouldTerminate = true;
+        }
+        else if (tempEvent.type == SDL_EVENT_KEY_DOWN)
+        {
+            switch (this->tempEvent.key.keysym.sym)
+            {
+            case SDLK_ESCAPE:
+                client.pingServer();
+                break;
+            }
+        }
+    }
+}
+
+void TicTacToeApp::UpdateNet()
+{
+    if (client.isConnected())
+    {
+        if (!client.incoming().empty())
+        {
+            auto msg = client.incoming().pop_front().msg;
+
+            switch (msg.header.id)
+            {
+            case TicTacToeMessage::ServerPing:
+                std::chrono::system_clock::time_point timeNow = std::chrono::system_clock::now();
+                std::chrono::system_clock::time_point timeThen;
+                msg >> timeThen;
+                std::cout << "Ping: " << std::chrono::duration<double>(timeNow - timeThen).count() << "\n";
+				break;
+            }
         }
     }
 }
@@ -110,4 +143,9 @@ void TicTacToeApp::InitIMGUI()
     
     ImGui_ImplSDL3_InitForOpenGL(mainWindow->getSDLWindow(), glContext);
     ImGui_ImplOpenGL3_Init(glsl_version.c_str());
+}
+
+void TicTacToeApp::InitClient()
+{
+    client.connect("127.0.0.1", 60000);
 }

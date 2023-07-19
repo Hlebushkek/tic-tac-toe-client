@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include "TicTacToeClient.hpp"
 #include "TicTacToeApp.hpp"
 #include "LoginView.hpp"
 #include "LinksView.hpp"
@@ -17,8 +18,9 @@ int main()
     //Login Button
     GUIButton *loginButton = new GUIButton();
     loginButton->title = "Login In";
-    loginButton->setButtonAction([loginView](GUIView *sender) {
+    loginButton->setButtonAction([loginView, app](GUIView *sender) {
         std::cout << "Login in with credentials: " << loginView->getLogin() << " " << loginView->getPassword() << std::endl;
+        app->getClient().loginIn(loginView->getLogin(), loginView->getPassword());
     });
     loginView->addSubview(loginButton);
 
@@ -36,7 +38,6 @@ int main()
         std::system("start https://github.com/Hlebushkek/tic-tac-toe-client");
     });
     linksView->addSubview(githubButton);
-
 
     //
     app->Run();
