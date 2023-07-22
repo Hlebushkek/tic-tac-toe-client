@@ -25,20 +25,22 @@ include_directories(
     external/SDL_image/include
 )
 
-#imgui
-file(GLOB IMGUI_SOURCES "external/imgui/*.cpp" "external/imgui/*.h"
-    "external/imgui/backends/imgui_impl_sdl3.cpp" "external/imgui/backends/imgui_impl_sdl3.h"
-    "external/imgui/backends/imgui_impl_opengl3.cpp" "external/imgui/backends/imgui_impl_opengl3.h"
-)
-add_library(imgui STATIC ${IMGUI_SOURCES})
-
 file(GLOB SOURCES "source/*.cpp" "include/*.hpp")
 link_directories(
     ${PROJECT_SOURCE_DIR}/build/external/sdl/
     ${PROJECT_SOURCE_DIR}/build/external/sdl_image/
 )
 
+#imgui
+file(GLOB IMGUI_SOURCES
+    "external/imgui/*.cpp" "external/imgui/*.h"
+    "external/imgui/backends/imgui_impl_sdl3.cpp" "external/imgui/backends/imgui_impl_sdl3.h"
+    "external/imgui/backends/imgui_impl_sdlrenderer3.cpp" "external/imgui/backends/imgui_impl_sdlrenderer3.h"
+)
+add_library(imgui STATIC ${IMGUI_SOURCES})
+
 add_executable(${PROJECT_NAME} ${SOURCES})
+target_compile_definitions(${PROJECT_NAME} PRIVATE IMGUI_DEFINE_MATH_OPERATORS)
 
 target_link_libraries(${PROJECT_NAME} glad)
 target_link_libraries(${PROJECT_NAME} imgui)

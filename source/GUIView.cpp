@@ -1,4 +1,6 @@
+#include <iostream>
 #include "GUIView.hpp"
+#include "GUIWindow.hpp"
 
 GUIView::GUIView()
 {
@@ -22,7 +24,19 @@ void GUIView::ImGuiRender()
         subview->ImGuiRender();
 }
 
+void GUIView::OnAttach()
+{
+
+}
+
+void GUIView::OnDetach()
+{
+
+}
+
 void GUIView::addSubview(GUIView *view)
 {
+    view->setWindow(window);
+    view->OnAttach();
     this->subviews.emplace_back(view);
 }

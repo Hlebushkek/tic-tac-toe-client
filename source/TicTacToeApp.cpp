@@ -1,23 +1,24 @@
+#include <SDL3/SDL_image.h>
+#include <backends/imgui_impl_sdl3.h>
+#include <backends/imgui_impl_sdlrenderer3.h>
 #include "TicTacToeApp.hpp"
 
 TicTacToeApp *TicTacToeApp::application = nullptr;
 
 TicTacToeApp::TicTacToeApp()
 {
-    InitWindow("TicTacToe", 800, 600, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-    InitGLAD();
-    InitGL();
+    InitWindow("TicTacToe", 800, 600, SDL_WINDOW_RESIZABLE);
+    // InitGLAD();
+    // InitGL();
     InitIMGUI();
     InitClient();
 }
 
 TicTacToeApp::~TicTacToeApp()
 {
-    ImGui::DestroyContext(imguiContext);
-    SDL_GL_DeleteContext(glContext);
-
-    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDLRenderer3_Shutdown();
     ImGui_ImplSDL3_Shutdown();
+    ImGui::DestroyContext(imguiContext);
 }
 
 void TicTacToeApp::Run()
@@ -28,27 +29,31 @@ void TicTacToeApp::Run()
 
 void TicTacToeApp::Update()
 {
-    glClearColor(0.2, 0.2, 0.2, 1);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
     UpdateInput();
 
     UpdateNet();
 
     mainWindow->Render();
 
-    ImGui_ImplOpenGL3_NewFrame();
+    SDL_Renderer *renderer = mainWindow->getSDLRenderer();
+    ImGuiIO& io = ImGui::GetIO();
+
+    ImGui_ImplSDLRenderer3_NewFrame();
     ImGui_ImplSDL3_NewFrame();
     ImGui::NewFrame();
     ImGui::SetCurrentContext(imguiContext);
     {
+        ImGui::ShowMetricsWindow();
         mainWindow->ImGuiRender();
     }
     ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
-    //Clean
-    SDL_GL_SwapWindow(mainWindow->getSDLWindow());
+    SDL_SetRenderScale(renderer, io.DisplayFramebufferScale.x, io.DisplayFramebufferScale.y);
+    SDL_SetRenderDrawColor(renderer, 40, 40, 40, 255);
+    SDL_RenderClear(renderer);
+
+    ImGui_ImplSDLRenderer3_RenderDrawData(ImGui::GetDrawData());
+    SDL_RenderPresent(renderer);
 }
 
 void TicTacToeApp::UpdateInput()
@@ -99,12 +104,9 @@ void TicTacToeApp::UpdateNet()
 void TicTacToeApp::InitWindow(const char *title, int windowWidth, int windowHeight, uint32_t windowFlags)
 {
     SDL_Init(SDL_INIT_EVERYTHING);
+    IMG_Init(IMG_INIT_PNG);
 
     mainWindow = new GUIWindow(title, windowWidth, windowHeight, windowFlags);
-
-    glContext = SDL_GL_CreateContext(mainWindow->getSDLWindow());
-
-    mainWindow->MakeKey(glContext);
 }
 
 void TicTacToeApp::InitGLAD()
@@ -123,26 +125,22 @@ void TicTacToeApp::InitGL()
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_SCISSOR_TEST);
+    glEnable(GL_TEXTURE_2D);
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
 void TicTacToeApp::InitIMGUI()
 {
-    std::string glsl_version = "";
-    glsl_version = "#version 130";
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-    
     IMGUI_CHECKVERSION();
     imguiContext = ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
     ImGui::StyleColorsDark();
-    
-    ImGui_ImplSDL3_InitForOpenGL(mainWindow->getSDLWindow(), glContext);
-    ImGui_ImplOpenGL3_Init(glsl_version.c_str());
+
+    ImGui_ImplSDL3_InitForSDLRenderer(mainWindow->getSDLWindow(), mainWindow->getSDLRenderer());
+    ImGui_ImplSDLRenderer3_Init(mainWindow->getSDLRenderer());
 }
 
 void TicTacToeApp::InitClient()

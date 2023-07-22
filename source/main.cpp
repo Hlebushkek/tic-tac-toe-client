@@ -13,11 +13,10 @@ int main()
 
     //Login View
     LoginView *loginView = new LoginView();
-    app->getMainWindow()->mainView = loginView;
+    app->getMainWindow()->mainView->addSubview(loginView);
 
     //Login Button
-    GUIButton *loginButton = new GUIButton();
-    loginButton->title = "Login In";
+    GUIButton *loginButton = new GUIButton("Login In");
     loginButton->setButtonAction([loginView, app](GUIView *sender) {
         std::cout << "Login in with credentials: " << loginView->getLogin() << " " << loginView->getPassword() << std::endl;
         app->getClient().loginIn(loginView->getLogin(), loginView->getPassword());
@@ -25,21 +24,20 @@ int main()
     loginView->addSubview(loginButton);
 
     //Statistic View
-    app->getMainWindow()->mainView->addSubview(new StatisticView());
+    loginView->addSubview(new StatisticView());
 
     //Links View
     LinksView *linksView = new LinksView();
-    app->getMainWindow()->mainView->addSubview(linksView);
+    loginView->addSubview(linksView);
 
     //Github button
-    GUIButton *githubButton = new GUIButton();
-    githubButton->title = "We on Github";
+    GUIButton *githubButton = new GUIButton("We on GitHub", "../resources/github-mark-white.png");
     githubButton->setButtonAction([](GUIView *sender) {
         std::system("start https://github.com/Hlebushkek/tic-tac-toe-client");
     });
     linksView->addSubview(githubButton);
 
-    //
+    //Run
     app->Run();
 
     return 0;
